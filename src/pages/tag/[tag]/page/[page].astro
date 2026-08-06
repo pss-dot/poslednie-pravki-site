@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../../../layouts/Base.astro';
+import InboxList from '../../../../components/InboxList.astro';
+import Pager from '../../../../components/Pager.astro';
+import { getSortedThreads } from '../../../../lib/threads';
+import { PAGE_SIZE } from '../../../../lib/pagination';
+import { TAG_LABELS, TAG_SLUGS } from '../../../../lib/tags';
+
+export async function getStaticPaths({ paginate }) {
+  const results = await Promise.all(
+    TAG_SLUGS.map(async (tag) => {
+      const posts = await getCollection('posts', ({ data }) => !data.draft && data.tag === tag);
+      const threads = getSortedThreads(posts);
+      // Page 1 lives at "/tag/<tag>/" — drop it here, same reasoning as the
+      // top-level "/page/[page].astro".
+      return paginate(threads, { pageSize: PAGE_SIZE, params: { tag } }).slice(1);
+    })
+  );
+  return results.flat();
+}
+
+const { tag } = Astro.params;
+const { page } = Astro.props;
+const tagLabel = TAG_LABELS[tag] ?? tag;
+const description = `Письма в папке «${tagLabel}» — блог почтового ящика издательского агентства «Последние правки».`;
+---
+<Base title={`Папка: ${tagLabel} — стр. ${page.currentPage}`} description={description}>
+  <InboxList threads={page.data} />
+  <Pager currentPage={page.currentPage} totalPages={page.lastPage} baseUrl={`/tag/${tag}/`} />
+</Base>

@@ -1,0 +1,220 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { groupThreads } from '../../lib/threads';
+import { TAG_LABELS } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const threads = groupThreads(posts);
+
+  // Chronological order (oldest first) so "previous/next letter" navigation
+  // reads the same direction as scrolling through a real inbox over time.
+  const ordered = Array.from(threads.entries()).map(([base, members]) => ({
+    base,
+    members,
+    latest: members[members.length - 1],
+  }));
+  ordered.sort((a, b) => a.latest.data.date.valueOf() - b.latest.data.date.valueOf());
+
+  const subjectOf = (t: (typeof ordered)[number]) =>
+    'Re: '.repeat(t.latest.data.replyDepth) + t.latest.data.subject;
+
+  return ordered.map(({ base, members }, i) => {
+    const prev = i > 0 ? ordered[i - 1] : null;
+    const next = i < ordered.length - 1 ? ordered[i + 1] : null;
+    return {
+      params: { slug: base },
+      props: {
+        members,
+        prevLetter: prev ? { base: prev.base, subject: subjectOf(prev) } : null,
+        nextLetter: next ? { base: next.base, subject: subjectOf(next) } : null,
+      },
+    };
+  });
+}
+
+const { members, prevLetter, nextLetter } = Astro.props;
+const latest = members[members.length - 1];
+const isThread = members.length > 1;
+
+const items = await Promise.all(
+  members.map(async (post, i) => {
+    const { Content } = await render(post);
+    return { post, Content, isFirst: i === 0 };
+  })
+);
+
+const dateFmt = new Intl.DateTimeFormat('ru-RU', {
+  day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+});
+const dateFmtShort = new Intl.DateTimeFormat('ru-RU', {
+  day: 'numeric', month: 'long', year: 'numeric',
+});
+
+const SingleContent = items[0].Content;
+const displaySubject = 'Re: '.repeat(latest.data.replyDepth) + latest.data.subject;
+
+// Plain-text excerpt for <meta description> and the schema.org description —
+// strip markdown syntax and quoted reply lines, collapse whitespace.
+const excerpt = latest.body
+  ? latest.body
+      .split('\n')
+      .filter((line) => !line.trim().startsWith('>'))
+      .join(' ')
+      .replace(/[#*_`>]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 155)
+  : '';
+
+const authorName = latest.data.from.replace(/<.*?>/, '').trim();
+const canonicalURL = new URL(`/letter/${members[0].id}/`, Astro.site).toString();
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: displaySubject,
+  description: excerpt,
+  datePublished: members[0].data.date.toISOString(),
+  dateModified: latest.data.date.toISOString(),
+  url: canonicalURL,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL },
+  articleSection: latest.data.tag,
+  inLanguage: 'ru-RU',
+  author: { '@type': 'Person', name: authorName },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Последние правки',
+    url: 'https://poslednie-pravki.ru',
+  },
+};
+---
+<Base title={displaySubject} description={excerpt} schema={schema} letterBase={members[0].id}>
+  <a class="back-link" href="/">&larr; Ко всем письмам</a>
+  <article class="letter">
+    <h2 class="letter-subject">{displaySubject}</h2>
+    <div class="letter-topline">
+      <span class="tag-badge" data-tag={latest.data.tag}>{TAG_LABELS[latest.data.tag] ?? latest.data.tag}</span>
+      {isThread && <span class="thread-count">{members.length} писем в переписке</span>}
+    </div>
+
+    {isThread ? (
+      <div class="thread-messages">
+        {items.map(({ post, Content, isFirst }) => (
+          <details class="message" open={isFirst}>
+            <summary>
+              <span class="msg-from">{post.data.from}</span>
+              <span class="msg-date">{dateFmtShort.format(post.data.date)}</span>
+            </summary>
+            <div class="meta">
+              <div><span class="label">От:</span> {post.data.from}</div>
+              <div><span class="label">Кому:</span> {post.data.to}</div>
+              <div><span class="label">Дата:</span> {dateFmt.format(post.data.date)}</div>
+            </div>
+            <div class="body">
+              <Content />
+            </div>
+          </details>
+        ))}
+      </div>
+    ) : (
+      <>
+        <div class="meta">
+          <div><span class="label">От:</span> {latest.data.from}</div>
+          <div><span class="label">Кому:</span> {latest.data.to}</div>
+          <div><span class="label">Дата:</span> {dateFmt.format(latest.data.date)}</div>
+        </div>
+        <div class="body">
+          <SingleContent />
+        </div>
+      </>
+    )}
+
+    <div class="share-wrap">
+      <button type="button" class="share-btn" data-share-title={displaySubject}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        </svg>
+        <span class="share-label">Переслать</span>
+      </button>
+    </div>
+  </article>
+
+  {(prevLetter || nextLetter) && (
+    <nav class="letter-nav">
+      {prevLetter ? (
+        <a class="letter-nav-link prev" href={`/letter/${prevLetter.base}/`}>
+          <span class="arrow">&larr;</span>
+          <span class="letter-nav-text">
+            <span class="letter-nav-label">Предыдущее письмо</span>
+            <span class="letter-nav-subject">{prevLetter.subject}</span>
+          </span>
+        </a>
+      ) : <span class="letter-nav-link disabled" />}
+      {nextLetter ? (
+        <a class="letter-nav-link next" href={`/letter/${nextLetter.base}/`}>
+          <span class="letter-nav-text">
+            <span class="letter-nav-label">Следующее письмо</span>
+            <span class="letter-nav-subject">{nextLetter.subject}</span>
+          </span>
+          <span class="arrow">&rarr;</span>
+        </a>
+      ) : <span class="letter-nav-link disabled" />}
+    </nav>
+  )}
+</Base>
+
+<script>
+  document.querySelectorAll('.share-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const url = window.location.href;
+      const title = btn.getAttribute('data-share-title') || document.title;
+      const label = btn.querySelector('.share-label');
+      const originalText = label ? label.textContent : '';
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ url, title });
+          return;
+        } catch (err) {
+          // user cancelled or share failed — fall through to clipboard
+        }
+      }
+
+      if (navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(url);
+          btn.classList.add('copied');
+          if (label) label.textContent = 'Ссылка скопирована';
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            if (label) label.textContent = originalText;
+          }, 2000);
+        } catch (err) {
+          // clipboard unavailable — nothing more we can do quietly
+        }
+      }
+    });
+  });
+
+  // Auto-expand thread messages as the reader scrolls to them, so a long
+  // reply chain reads like scrolling through real correspondence instead of
+  // requiring a click on every message.
+  const threadMessages = document.querySelectorAll('.thread-messages .message');
+  if (threadMessages.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.open = true;
+          }
+        });
+      },
+      { rootMargin: '0px 0px -15% 0px', threshold: 0 }
+    );
+    threadMessages.forEach((msg) => observer.observe(msg));
+  }
+</script>

@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import InboxList from '../components/InboxList.astro';
+import Pager from '../components/Pager.astro';
+import { getSortedThreads } from '../lib/threads';
+import { sliceThreads } from '../lib/pagination';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const threads = getSortedThreads(allPosts);
+const { items: pageThreads, currentPage, totalPages } = sliceThreads(threads, 1);
+
+const description = 'Всё, что приходит на почту издательского агентства «Последние правки»: рассылки, рукописи и внутренняя переписка.';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Последние правки',
+  description,
+  url: 'https://poslednie-pravki.ru/',
+  inLanguage: 'ru-RU',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Последние правки',
+    url: 'https://poslednie-pravki.ru',
+  },
+  blogPost: pageThreads.map(({ base, latest }) => ({
+    '@type': 'BlogPosting',
+    headline: 'Re: '.repeat(latest.data.replyDepth) + latest.data.subject,
+    url: new URL(`/letter/${base}/`, 'https://poslednie-pravki.ru').toString(),
+    datePublished: latest.data.date.toISOString(),
+  })),
+};
+---
+<Base description={description} schema={schema}>
+  <InboxList threads={pageThreads} emptyMessage="Пока пусто. Первые письма скоро появятся." />
+  <Pager currentPage={currentPage} totalPages={totalPages} baseUrl="/" />
+</Base>

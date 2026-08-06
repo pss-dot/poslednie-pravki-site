@@ -1,0 +1,29 @@
+---
+import type { ThreadSummary } from '../lib/threads';
+import { TAG_LABELS } from '../lib/tags';
+
+interface Props {
+  threads: ThreadSummary[];
+  emptyMessage?: string;
+}
+
+const { threads, emptyMessage = 'Пока пусто.' } = Astro.props;
+const dateFmt = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<div class="inbox-list">
+  {threads.length === 0 && <div class="empty">{emptyMessage}</div>}
+  {threads.map(({ base, latest, count }) => (
+    <a class="inbox-row" href={`/letter/${base}/`} data-base={base}>
+      <div class="row-top">
+        <span>{latest.data.from}</span>
+        <span>{dateFmt.format(latest.data.date)}</span>
+      </div>
+      <div class="subject">
+        {'Re: '.repeat(latest.data.replyDepth)}{latest.data.subject}
+        <span class="tag-badge" data-tag={latest.data.tag}>{TAG_LABELS[latest.data.tag] ?? latest.data.tag}</span>
+        {count > 1 && <span class="thread-count-badge">{count} писем</span>}
+        <span class="new-badge">Новое</span>
+      </div>
+    </a>
+  ))}
+</div>

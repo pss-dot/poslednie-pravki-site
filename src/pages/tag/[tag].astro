@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import InboxList from '../../components/InboxList.astro';
+import Pager from '../../components/Pager.astro';
+import { getSortedThreads } from '../../lib/threads';
+import { sliceThreads } from '../../lib/pagination';
+import { TAG_LABELS, TAG_SLUGS } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  return TAG_SLUGS.map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params;
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.tag === tag);
+const threads = getSortedThreads(allPosts);
+const { items: pageThreads, currentPage, totalPages } = sliceThreads(threads, 1);
+
+const tagLabel = TAG_LABELS[tag] ?? tag;
+const description = `Письма в папке «${tagLabel}» — блог почтового ящика издательского агентства «Последние правки».`;
+const canonicalURL = new URL(`/tag/${tag}/`, 'https://poslednie-pravki.ru').toString();
+const baseUrl = `/tag/${tag}/`;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `Папка: ${tagLabel}`,
+  description,
+  url: canonicalURL,
+  inLanguage: 'ru-RU',
+  isPartOf: { '@type': 'Blog', name: 'Последние правки', url: 'https://poslednie-pravki.ru/' },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: pageThreads.map(({ base, latest }, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: new URL(`/letter/${base}/`, 'https://poslednie-pravki.ru').toString(),
+      name: 'Re: '.repeat(latest.data.replyDepth) + latest.data.subject,
+    })),
+  },
+};
+---
+<Base title={`Папка: ${tagLabel}`} description={description} schema={schema}>
+  <InboxList threads={pageThreads} emptyMessage="В этой папке пока пусто." />
+  <Pager currentPage={currentPage} totalPages={totalPages} baseUrl={baseUrl} />
+</Base>

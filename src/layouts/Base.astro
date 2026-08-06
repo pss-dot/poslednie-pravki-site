@@ -1,0 +1,237 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  schema?: Record<string, unknown>;
+  letterBase?: string;
+}
+
+const { title, description, schema, letterBase } = Astro.props;
+const pageTitle = title ? `${title} — Последние правки` : 'Последние правки — блог почтового ящика издательства';
+const pageDescription = description || 'Всё, что приходит на почту издательского агентства «Последние правки»: рассылки, рукописи и внутренняя переписка.';
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const currentYear = new Date().getFullYear();
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={pageDescription} />
+  <link rel="canonical" href={canonicalURL} />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Последние правки" />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={pageDescription} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:image" content={new URL('/og-image.png', Astro.site)} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={pageDescription} />
+  <meta name="twitter:image" content={new URL('/og-image.png', Astro.site)} />
+
+  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+
+  <script defer src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
+</head>
+<body data-letter-base={letterBase}>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1><a href="/">Последние правки</a></h1>
+        <div class="mailbox">info@poslednie-pravki.ru</div>
+        <p class="tagline">разбираем письма в почтовом ящике издательского агентства</p>
+      </div>
+      <nav class="folders">
+        <a href="/" class={isActive('/') ? 'active' : ''}>Все письма</a>
+        <a href="/tag/rassylka/" class={isActive('/tag/rassylka/') ? 'active' : ''}>
+          <span class="dot" data-tag="rassylka"></span>Рассылка
+        </a>
+        <a href="/tag/avtory/" class={isActive('/tag/avtory/') ? 'active' : ''}>
+          <span class="dot" data-tag="avtory"></span>Авторы
+        </a>
+        <a href="/tag/perepiska/" class={isActive('/tag/perepiska/') ? 'active' : ''}>
+          <span class="dot" data-tag="perepiska"></span>Переписка
+        </a>
+      </nav>
+      <div class="push-subscribe" id="push-subscribe" hidden>
+        <button type="button" id="push-subscribe-btn" class="push-btn">🔔 Получать уведомления о новых письмах</button>
+      </div>
+      <div class="tg-subscribe">
+        <a class="push-btn tg-link" href="https://t.me/finaledits" target="_blank" rel="noopener">Читать в Telegram →</a>
+      </div>
+      <footer class="side-footer">
+        «Последние правки» — издательское агентство.<br />Это блог от имени рабочего почтового ящика.
+        <div class="year year-desktop">© {currentYear}</div>
+        <div class="footer-links"><a href="/cookies/">Политика cookies</a></div>
+      </footer>
+    </aside>
+    <div class="content-col">
+      <main>
+        <slot />
+      </main>
+    </div>
+    <footer class="year year-mobile">© {currentYear}</footer>
+  </div>
+
+  <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Наверх">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <div id="cookie-banner" class="cookie-banner" hidden>
+    <p>
+      Сайт хранит в вашем браузере только технические данные: какие письма вы уже открывали и
+      согласие на эту самую надпись. Никакой рекламы, аналитики и передачи данных третьим лицам.
+      <a href="/cookies/">Подробнее</a>.
+    </p>
+    <button type="button" id="cookie-accept" class="cookie-accept">Хорошо, понятно</button>
+  </div>
+</body>
+</html>
+
+<script>
+  const scrollBtn = document.getElementById('scroll-top-btn');
+  if (scrollBtn) {
+    const toggle = () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 500);
+    };
+    window.addEventListener('scroll', toggle, { passive: true });
+    toggle();
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // --- Cookie / local-storage consent notice ---
+  const CONSENT_KEY = 'pp-cookie-consent';
+  try {
+    if (!localStorage.getItem(CONSENT_KEY)) {
+      const banner = document.getElementById('cookie-banner');
+      if (banner) banner.hidden = false;
+    }
+    const acceptBtn = document.getElementById('cookie-accept');
+    if (acceptBtn) {
+      acceptBtn.addEventListener('click', () => {
+        localStorage.setItem(CONSENT_KEY, '1');
+        const banner = document.getElementById('cookie-banner');
+        if (banner) banner.hidden = true;
+      });
+    }
+  } catch (e) {
+    // localStorage unavailable (private mode etc.) — skip silently, nothing to persist
+  }
+
+  // --- "Новое" badges on the inbox / tag listings ---
+  const OPENED_KEY = 'pp-opened-letters';
+  try {
+    const rows = document.querySelectorAll('.inbox-row[data-base]');
+    if (rows.length) {
+      const stored = localStorage.getItem(OPENED_KEY);
+      const opened = stored ? JSON.parse(stored) : null;
+
+      if (!opened) {
+        // First-ever visit: treat everything currently published as already seen,
+        // so a brand-new reader doesn't see the whole inbox flagged "new".
+        const all = Array.from(rows, (row) => row.getAttribute('data-base'));
+        localStorage.setItem(OPENED_KEY, JSON.stringify(all));
+      } else {
+        const openedSet = new Set(opened);
+        rows.forEach((row) => {
+          const base = row.getAttribute('data-base');
+          if (base && !openedSet.has(base)) {
+            row.classList.add('is-new');
+          }
+        });
+      }
+    }
+
+    // Mark the current letter as opened once its page has loaded.
+    const currentBase = document.body.getAttribute('data-letter-base');
+    if (currentBase) {
+      const stored = localStorage.getItem(OPENED_KEY);
+      const opened = stored ? JSON.parse(stored) : [];
+      if (!opened.includes(currentBase)) {
+        opened.push(currentBase);
+        localStorage.setItem(OPENED_KEY, JSON.stringify(opened));
+      }
+    }
+  } catch (e) {
+    // localStorage unavailable — badges simply won't show, no hard failure
+  }
+
+  // --- OneSignal push-notification opt-in ---
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+  let pushUIWired = false;
+  const wirePushUI = (OneSignal) => {
+    if (pushUIWired) return;
+    const wrap = document.getElementById('push-subscribe');
+    const btn = document.getElementById('push-subscribe-btn');
+    if (!wrap || !btn || !OneSignal.Notifications) return;
+    pushUIWired = true;
+
+    const updateUI = () => {
+      try {
+        wrap.hidden = !!OneSignal.Notifications.permission;
+      } catch (e) {
+        // leave current visibility as-is if the SDK isn't ready yet
+      }
+    };
+    updateUI();
+    OneSignal.Notifications.addEventListener('permissionChange', updateUI);
+
+    btn.addEventListener('click', async () => {
+      try {
+        await OneSignal.Notifications.requestPermission();
+      } catch (e) {
+        // permission prompt failed/blocked — nothing more we can do quietly
+      }
+      updateUI();
+    });
+  };
+
+  OneSignalDeferred.push(async function (OneSignal) {
+    try {
+      await OneSignal.init({ appId: '5ed6228e-b1f8-42f2-8220-3c1bad7d23f4' });
+    } catch (e) {
+      // init can legitimately reject if already initialized elsewhere — the
+      // SDK object is still usable in that case, so fall through and wire
+      // the UI regardless rather than aborting.
+    }
+    wirePushUI(OneSignal);
+  });
+
+  // Safety net independent of the OneSignalDeferred queue: on some first-load
+  // timing paths the deferred callback above never fires in time (or at all),
+  // leaving the subscribe button permanently hidden. Poll briefly for the SDK
+  // to appear on window and wire the UI directly from there too.
+  let pushPollTries = 0;
+  const pushPoll = setInterval(() => {
+    pushPollTries += 1;
+    if (window.OneSignal && window.OneSignal.Notifications) {
+      wirePushUI(window.OneSignal);
+      clearInterval(pushPoll);
+    } else if (pushPollTries > 20) {
+      clearInterval(pushPoll);
+    }
+  }, 500);
+</script>

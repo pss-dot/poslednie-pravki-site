@@ -1,0 +1,15 @@
+{
+  "name": "poslednie-pravki",
+  "version": "1.0.0",
+  "description": "Блог издательского агентства «Последние правки» от имени почтового ящика",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.1.6"
+  }
+}

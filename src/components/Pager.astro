@@ -1,0 +1,20 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl: string; // e.g. "/" or "/tag/avtory/" — always trailing slash
+}
+
+const { currentPage, totalPages, baseUrl } = Astro.props;
+
+const pageUrl = (n: number) => (n <= 1 ? baseUrl : `${baseUrl}page/${n}/`);
+const prevUrl = currentPage > 1 ? pageUrl(currentPage - 1) : null;
+const nextUrl = currentPage < totalPages ? pageUrl(currentPage + 1) : null;
+---
+{totalPages > 1 && (
+  <nav class="pager" aria-label="Навигация по страницам">
+    {prevUrl ? <a href={prevUrl} class="pager-link pager-prev">← Новее</a> : <span class="pager-link pager-disabled">← Новее</span>}
+    <span class="pager-status">Страница {currentPage} из {totalPages}</span>
+    {nextUrl ? <a href={nextUrl} class="pager-link pager-next">Старее →</a> : <span class="pager-link pager-disabled">Старее →</span>}
+  </nav>
+)}
