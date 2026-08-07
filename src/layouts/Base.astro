@@ -46,9 +46,24 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   <meta name="twitter:description" content={pageDescription} />
   <meta name="twitter:image" content={new URL('/og-image.png', Astro.site)} />
 
+  <meta name="google-site-verification" content="kQynYhs-Uu9A2wCnaRk3zXagE5_Ug7tzpGWYI7hCum0" />
+  <meta name="yandex-verification" content="c22cf0d797bac564" />
+
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
 
   <script defer src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
+
+  <script is:inline type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js', 'ym');
+
+    ym(94758183, 'init', {webvisor:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/94758183" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 </head>
 <body data-letter-base={letterBase}>
   <div class="shell">
@@ -78,7 +93,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       </div>
       <footer class="side-footer">
         «Последние правки» — издательское агентство.<br />Это блог от имени рабочего почтового ящика.
-        <div class="year year-desktop">© {currentYear}</div>
+        <div class="year year-desktop">© {currentYear} · письма написаны с помощью ИИ</div>
         <div class="footer-links"><a href="/cookies/">Политика cookies</a></div>
       </footer>
     </aside>
@@ -87,7 +102,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
         <slot />
       </main>
     </div>
-    <footer class="year year-mobile">© {currentYear}</footer>
+    <footer class="year year-mobile">© {currentYear} · письма написаны с помощью ИИ</footer>
   </div>
 
   <button type="button" id="scroll-top-btn" class="scroll-top-btn" aria-label="Наверх">
@@ -99,9 +114,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
   <div id="cookie-banner" class="cookie-banner" hidden>
     <p>
-      Сайт хранит в вашем браузере только технические данные: какие письма вы уже открывали и
-      согласие на эту самую надпись. Никакой рекламы, аналитики и передачи данных третьим лицам.
-      <a href="/cookies/">Подробнее</a>.
+      Сайт хранит в вашем браузере технические данные (какие письма вы уже открывали, согласие на
+      эту надпись) и использует Яндекс.Метрику для статистики посещений. Рекламы и передачи данных
+      третьим лицам, кроме этого, нет. <a href="/cookies/">Подробнее</a>.
     </p>
     <button type="button" id="cookie-accept" class="cookie-accept">Хорошо, понятно</button>
   </div>
