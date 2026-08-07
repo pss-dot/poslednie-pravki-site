@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /page/
+Disallow: /*/page/
 
 Sitemap: https://poslednie-pravki.ru/sitemap-index.xml
