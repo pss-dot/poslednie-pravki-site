@@ -10,9 +10,10 @@ export default defineConfig({
         const path = new URL(page).pathname;
         // Only tag landing pages (/tag/xxx/) and individual letters (/letter/xxx/) —
         // no homepage, no pagination pages, no cookies page.
+        const isHomePage = path === '/';
         const isTagPage = /^\/tag\/[^/]+\/$/.test(path);
         const isLetterPage = /^\/letter\/[^/]+\/$/.test(path);
-        return isTagPage || isLetterPage;
+        return isHomePage || isTagPage || isLetterPage;
       },
     }),
   ],
