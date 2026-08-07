@@ -678,3 +678,264 @@ nav.folders .dot[data-tag="perepiska"] { background: var(--tag-internal); }
     padding: 14px 16px;
   }
 }
+
+/* --- Форматы писем: разнообразные "вложения" и стилевые блоки --- */
+
+.letter .body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.92rem;
+}
+
+.letter .body th,
+.letter .body td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.letter .body th {
+  background: var(--panel);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.letter .body s,
+.letter .body del {
+  color: var(--accent);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+/* Голосовое сообщение (декоративное, без реального аудио) */
+.voice-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 8px 16px 8px 14px;
+  margin: 12px 0 4px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.voice-note .vn-icon { font-size: 1rem; }
+
+.voice-note .vn-wave {
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+
+.voice-note .vn-duration {
+  color: var(--muted);
+}
+
+.voice-transcript {
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 4px 0 16px;
+}
+
+/* Вложение-фото, которое "не загрузилось" */
+.attachment-broken {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.attachment-broken .ab-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--line);
+}
+
+.attachment-broken .ab-name {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Скриншот переписки (например, с телефона) — фиксированные iOS-цвета,
+   не зависит от палитры сайта, потому что имитирует настоящий скрин. */
+.chat-screenshot-wrap {
+  margin: 16px 0;
+}
+
+.chat-screenshot-wrap .cs-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.chat-screenshot {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  max-width: 360px;
+}
+
+.chat-screenshot .cs-statusbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 16px 2px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #000;
+}
+
+.chat-screenshot .cs-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0 10px;
+  border-bottom: 1px solid #e5e5ea;
+}
+
+.chat-screenshot .cs-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #c7c7cc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+}
+
+.chat-screenshot .cs-contact-name {
+  font-size: 0.7rem;
+  color: #000;
+}
+
+.chat-screenshot .cs-messages {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-screenshot .cs-time {
+  align-self: center;
+  font-size: 0.65rem;
+  color: #8e8e93;
+  margin-bottom: 4px;
+}
+
+.chat-screenshot .cs-bubble {
+  border-radius: 16px;
+  padding: 7px 13px;
+  font-size: 0.85rem;
+  max-width: 78%;
+  line-height: 1.35;
+}
+
+.chat-screenshot .cs-bubble.received {
+  align-self: flex-start;
+  background: #e5e5ea;
+  color: #000;
+}
+
+.chat-screenshot .cs-bubble.sent {
+  align-self: flex-end;
+  background: #007aff;
+  color: #fff;
+}
+
+/* Переслано из другого разговора */
+.forwarded {
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 16px;
+  background: var(--panel);
+}
+
+.forwarded .fwd-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.forwarded blockquote {
+  margin: 0 !important;
+  padding-left: 14px !important;
+}
+
+/* Бюрократический бланк (для "рассылки") */
+.mail-form {
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.mail-form .mf-row {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+
+.mail-form .mf-row:last-child { border-bottom: none; }
+
+.mail-form .mf-label {
+  flex: 0 0 160px;
+  padding: 8px 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  border-right: 1px solid var(--line);
+}
+
+.mail-form .mf-value {
+  flex: 1;
+  padding: 8px 12px;
+}
+
+/* Мелкий шрифт / юридическая плита (для "рассылки") */
+.legal-fine {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+/* Плашка "автоответ" */
+.autoreply-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-bottom: 12px;
+}
