@@ -70,27 +70,45 @@ const excerpt = latest.body
 
 const authorName = latest.data.from.replace(/<.*?>/, '').trim();
 const canonicalURL = new URL(`/letter/${members[0].id}/`, Astro.site).toString();
+const ogImageURL = new URL('/og-image.png', Astro.site).toString();
+const tagLabel = TAG_LABELS[latest.data.tag] ?? latest.data.tag;
+const publishedTime = members[0].data.date.toISOString();
+const modifiedTime = latest.data.date.toISOString();
 
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: displaySubject,
   description: excerpt,
-  datePublished: members[0].data.date.toISOString(),
-  dateModified: latest.data.date.toISOString(),
+  image: ogImageURL,
+  datePublished: publishedTime,
+  dateModified: modifiedTime,
   url: canonicalURL,
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL },
-  articleSection: latest.data.tag,
+  articleSection: tagLabel,
+  keywords: tagLabel,
   inLanguage: 'ru-RU',
+  isPartOf: { '@type': 'Blog', name: 'Последние правки', url: 'https://poslednie-pravki.ru' },
   author: { '@type': 'Person', name: authorName },
   publisher: {
     '@type': 'Organization',
     name: 'Последние правки',
     url: 'https://poslednie-pravki.ru',
+    logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', Astro.site).toString() },
   },
 };
 ---
-<Base title={displaySubject} description={excerpt} schema={schema} letterBase={members[0].id}>
+<Base
+  title={displaySubject}
+  description={excerpt}
+  schema={schema}
+  letterBase={members[0].id}
+  ogType="article"
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  articleAuthor={authorName}
+  articleSection={tagLabel}
+>
   <a class="back-link" href="/">&larr; Ко всем письмам</a>
   <article class="letter">
     <h2 class="letter-subject">{displaySubject}</h2>
