@@ -108,6 +108,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
         <a href="/tag/perepiska/" class={isActive('/tag/perepiska/') ? 'active' : ''}>
           <span class="dot" data-tag="perepiska"></span>Переписка
         </a>
+        <a href="/tag/poslednie-pravki/" class={isActive('/tag/poslednie-pravki/') ? 'active' : ''}>
+          <span class="dot" data-tag="poslednie-pravki"></span>Последние правки
+        </a>
       </nav>
       <div class="push-subscribe" id="push-subscribe" hidden>
         <button type="button" id="push-subscribe-btn" class="push-btn">🔔 Получать уведомления о новых письмах</button>

@@ -8,6 +8,7 @@
   --tag-newsletter: #8a6d3b;
   --tag-authors: #2f5d50;
   --tag-internal: #3b4d8a;
+  --tag-final: #7a3b6b;
   --font: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'Courier New', monospace;
 }
@@ -103,6 +104,7 @@ nav.folders .dot {
 nav.folders .dot[data-tag="rassylka"] { background: var(--tag-newsletter); }
 nav.folders .dot[data-tag="avtory"] { background: var(--tag-authors); }
 nav.folders .dot[data-tag="perepiska"] { background: var(--tag-internal); }
+nav.folders .dot[data-tag="poslednie-pravki"] { background: var(--tag-final); }
 
 .side-footer {
   font-size: 0.75rem;
@@ -167,6 +169,7 @@ nav.folders .dot[data-tag="perepiska"] { background: var(--tag-internal); }
 .tag-badge[data-tag="rassylka"] { background: var(--tag-newsletter); }
 .tag-badge[data-tag="avtory"] { background: var(--tag-authors); }
 .tag-badge[data-tag="perepiska"] { background: var(--tag-internal); }
+.tag-badge[data-tag="poslednie-pravki"] { background: var(--tag-final); }
 
 .empty {
   padding: 40px 16px;
