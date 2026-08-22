@@ -13,6 +13,8 @@
 | Юнас Стрём | jonas.strom@poslednie-pravki.ru | Сотрудник, технически подкован — чинил часовой пояс в календаре | `re-re-spor-o-kalendare`, упомянут в `instruktsiya-po-podmene` (кофемашина к его приходу) |
 | Матиас Рённе | matias.ronne@poslednie-pravki.ru | Сотрудник редакции | `re-spor-o-kalendare` |
 | Симона Латур | simona.latour@poslednie-pravki.ru | Сотрудница, в тёплых отношениях с Ханной («только не смейся») | `bot-iz-hr-rassylki` |
+| Ирена Кошта | irena.kosta@poslednie-pravki.ru | Редактор — ведёт книгу Хенрика Вальда «Ноябрь в Дельте» на финальной стадии (ветка «Последние правки») | `ostalos-vnesti-poslednie-pravki` |
+| Ингрид Ларссон | i.larsson@poslednie-pravki.ru | Сотрудница редакции — забрала фикус уволившегося Ромберга | `fikus-u-okna`, упомянута в `re-bot-s-prazdnikami` |
 | Сага Линдквист | hr@poslednie-pravki.ru | HR — организует корпоратив, упоминается коллегами | `korporativ-chernovik`, упомянута в `zapyataya-v-sinopsise` |
 
 ## Важно учитывать дальше
