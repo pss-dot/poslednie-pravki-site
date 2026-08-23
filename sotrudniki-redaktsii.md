@@ -6,7 +6,7 @@
 |---|---|---|---|
 | Ханна Вебер | hanna.weber@poslednie-pravki.ru | Главный редактор — принимает финальные решения по рукописям, отвечает авторам о запуске в работу, обсуждает с Феликсом отпуска и дедлайны | `dedlayn-po-antologii` (цепочка), `naschet-oblozhki`, `re-dvenadtsat-sudeb-odnoy-kvartiry` (ответ автору Ковачу), `re/re-re-ochered-myt-kofemashinu` |
 | Феликс Бергман | felix.bergman@poslednie-pravki.ru | Выпускающий редактор — курирует вёрстку и обложки, организационные вопросы, близкий коллега Ханны | `naschet-oblozhki`, `re-dedlayn-po-antologii`, `re/re-re-re-kurer-ne-najdet-ofis` (цепочка), `re-ochered-myt-kofemashinu`, `instruktsiya-po-podmene` |
-| Марго Фехер | margo.feher@poslednie-pravki.ru | Редактор — ведёт рукопись «Зимний свет над Богенсее», переписка с автором о сроках | `sroki-zimniy-svet` (цепочка) |
+| Марго Фехер | margo.feher@poslednie-pravki.ru | Редактор — вела рукопись «Зимний свет над Богенсее». **С сентября 2026 уходит из издательства** (переезд), книга передана Мие Хаген | `sroki-zimniy-svet` (цепочка), `margo-uhodit-zimniy-svet` |
 | Мия Хаген | m.hagen@poslednie-pravki.ru | Редактор/корректор — участница спора о запятой в синопсисе, разбирается в Розентале | `zapyataya-v-sinopsise`, `re-re-re-ochered-myt-kofemashinu` |
 | Оскар Дальгрен | oskar.dahlgren@poslednie-pravki.ru | Редактор/корректор — оппонент Мии в споре о запятой, поднимает тему немытой кофемашины | `ochered-myt-kofemashinu` (цепочка), `zapyataya-v-sinopsise` (адресат) |
 | Клара Хольм | klara.holm@poslednie-pravki.ru | Сотрудница редакции, роль явно не уточнялась | `spor-o-kalendare` |
