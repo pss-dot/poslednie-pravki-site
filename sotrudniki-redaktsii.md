@@ -16,6 +16,7 @@
 | Ирена Кошта | irena.kosta@poslednie-pravki.ru | Редактор — ведёт книгу Хенрика Вальда «Ноябрь в Дельте» на финальной стадии (ветка «Последние правки») | `ostalos-vnesti-poslednie-pravki` |
 | Ингрид Ларссон | i.larsson@poslednie-pravki.ru | Сотрудница редакции — забрала фикус уволившегося Ромберга | `fikus-u-okna`, упомянута в `re-bot-s-prazdnikami` |
 | Сага Линдквист | hr@poslednie-pravki.ru | HR — организует корпоратив, упоминается коллегами | `korporativ-chernovik`, упомянута в `zapyataya-v-sinopsise` |
+| Давид Ноордман | david.noordman@poslednie-pravki.ru | Младший редактор — начал 2026-08-27, представился редакции письмом-знакомством | `novyj-v-redaktsii` |
 
 ## Важно учитывать дальше
 
