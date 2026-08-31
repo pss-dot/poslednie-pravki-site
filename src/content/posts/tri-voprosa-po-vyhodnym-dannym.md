@@ -5,7 +5,7 @@ to: "felix.bergman@poslednie-pravki.ru"
 date: 2026-08-31
 tag: "avtory"
 replyDepth: 0
-draft: true
+draft: false
 ---
 Феликс, добрый день.
 
