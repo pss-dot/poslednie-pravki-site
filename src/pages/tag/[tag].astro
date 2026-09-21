@@ -18,7 +18,7 @@ const threads = getSortedThreads(allPosts);
 const { items: pageThreads, currentPage, totalPages } = sliceThreads(threads, 1);
 
 const tagLabel = TAG_LABELS[tag] ?? tag;
-const description = `Папка «${tagLabel}» в вымышленной рабочей почте издательского агентства «Последние правки» — юмористический проект, письма пишутся с помощью нейросети.`;
+const description = `Папка «${tagLabel}» в вымышленной рабочей почте издательского агентства «Последние правки» — творческий проект, письма пишутся с помощью нейросети.`;
 const canonicalURL = new URL(`/tag/${tag}/`, 'https://poslednie-pravki.ru').toString();
 const baseUrl = `/tag/${tag}/`;
 
