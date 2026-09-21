@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { groupThreads } from '../../lib/threads';
 import { TAG_LABELS } from '../../lib/tags';
+import { SITE_URL, ORG_REF, BLOG_REF, DISCLAIMER } from '../../lib/about';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -75,28 +76,63 @@ const tagLabel = TAG_LABELS[latest.data.tag] ?? latest.data.tag;
 const publishedTime = members[0].data.date.toISOString();
 const modifiedTime = latest.data.date.toISOString();
 
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: displaySubject,
-  description: excerpt,
-  image: ogImageURL,
-  datePublished: publishedTime,
-  dateModified: modifiedTime,
-  url: canonicalURL,
-  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL },
-  articleSection: tagLabel,
-  keywords: tagLabel,
-  inLanguage: 'ru-RU',
-  isPartOf: { '@type': 'Blog', name: 'Последние правки', url: 'https://poslednie-pravki.ru' },
-  author: { '@type': 'Person', name: authorName },
-  publisher: {
-    '@type': 'Organization',
-    name: 'Последние правки',
-    url: 'https://poslednie-pravki.ru',
-    logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', Astro.site).toString() },
+// Чистый текст всех писем цепочки (без цитат «>» и разметки) — для articleBody и подсчёта слов.
+const plainText = members
+  .map((m) =>
+    (m.body ?? '')
+      .split('\n')
+      .filter((line) => !line.trim().startsWith('>'))
+      .join('\n')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/[#*_`]/g, '')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  )
+  .join('\n\n');
+const wordCount = plainText.split(/\s+/).filter(Boolean).length;
+const readMinutes = Math.max(1, Math.round(wordCount / 180));
+
+const breadcrumbId = `${canonicalURL}#breadcrumb`;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${canonicalURL}#article`,
+    headline: displaySubject,
+    description: excerpt,
+    disambiguatingDescription: DISCLAIMER,
+    image: { '@type': 'ImageObject', url: ogImageURL, width: 1200, height: 630 },
+    datePublished: publishedTime,
+    dateModified: modifiedTime,
+    url: canonicalURL,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL },
+    articleSection: tagLabel,
+    genre: [tagLabel, 'юмор', 'вымышленная переписка'],
+    keywords: [tagLabel, 'юмор', 'вымышленная переписка', 'издательство'].join(', '),
+    inLanguage: 'ru-RU',
+    isAccessibleForFree: true,
+    wordCount,
+    timeRequired: `PT${readMinutes}M`,
+    articleBody: plainText.slice(0, 20000),
+    isPartOf: BLOG_REF,
+    // Отправитель письма — вымышленный персонаж, поэтому автор — сам проект.
+    author: ORG_REF,
+    publisher: { ...ORG_REF, logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', Astro.site).toString() } },
+    breadcrumb: { '@id': breadcrumbId },
   },
-};
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': breadcrumbId,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Все письма', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: tagLabel, item: `${SITE_URL}/tag/${latest.data.tag}/` },
+      { '@type': 'ListItem', position: 3, name: displaySubject, item: canonicalURL },
+    ],
+  },
+];
 ---
 <Base
   title={displaySubject}

@@ -3,6 +3,9 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import InboxList from '../components/InboxList.astro';
 import Pager from '../components/Pager.astro';
+import About from '../components/About.astro';
+import { SITE_URL, BLOG_ID, ORG_REF, WEBSITE_REF, SITE_DESCRIPTION, faq } from '../lib/about';
+import { TAG_LABELS } from '../lib/tags';
 import { getSortedThreads } from '../lib/threads';
 import { sliceThreads } from '../lib/pagination';
 
@@ -10,29 +13,52 @@ const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const threads = getSortedThreads(allPosts);
 const { items: pageThreads, currentPage, totalPages } = sliceThreads(threads, 1);
 
-const description = 'Всё, что приходит на почту издательского агентства «Последние правки»: рассылки, рукописи и внутренняя переписка.';
+const description = SITE_DESCRIPTION;
 
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'Blog',
-  name: 'Последние правки',
-  description,
-  url: 'https://poslednie-pravki.ru/',
-  inLanguage: 'ru-RU',
-  publisher: {
-    '@type': 'Organization',
+const subjectOf = (latest: (typeof pageThreads)[number]['latest']) =>
+  'Re: '.repeat(latest.data.replyDepth) + latest.data.subject;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    '@id': BLOG_ID,
     name: 'Последние правки',
-    url: 'https://poslednie-pravki.ru',
+    description: 'Юмористический проект: вымышленная рабочая почта вымышленного издательского агентства. Рассылки, письма авторов и внутренняя переписка редакции, написанные с помощью нейросети и отредактированные человеком. Все персонажи и организации выдуманы.',
+    url: `${SITE_URL}/`,
+    inLanguage: 'ru-RU',
+    genre: ['юмор', 'вымышленная переписка', 'эпистолярная проза'],
+    isAccessibleForFree: true,
+    isPartOf: WEBSITE_REF,
+    publisher: ORG_REF,
+    author: ORG_REF,
+    hasPart: (['rassylka', 'avtory', 'perepiska', 'poslednie-pravki'] as const).map((tag) => ({
+      '@type': 'CollectionPage',
+      name: `Папка: ${TAG_LABELS[tag]}`,
+      url: `${SITE_URL}/tag/${tag}/`,
+    })),
+    blogPost: pageThreads.map(({ base, latest }) => ({
+      '@type': 'BlogPosting',
+      headline: subjectOf(latest),
+      url: `${SITE_URL}/letter/${base}/`,
+      datePublished: latest.data.date.toISOString(),
+      articleSection: TAG_LABELS[latest.data.tag] ?? latest.data.tag,
+      inLanguage: 'ru-RU',
+    })),
   },
-  blogPost: pageThreads.map(({ base, latest }) => ({
-    '@type': 'BlogPosting',
-    headline: 'Re: '.repeat(latest.data.replyDepth) + latest.data.subject,
-    url: new URL(`/letter/${base}/`, 'https://poslednie-pravki.ru').toString(),
-    datePublished: latest.data.date.toISOString(),
-  })),
-};
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+];
 ---
 <Base description={description} schema={schema}>
+  <About />
   <InboxList threads={pageThreads} emptyMessage="Пока пусто. Первые письма скоро появятся." />
   <Pager currentPage={currentPage} totalPages={totalPages} baseUrl="/" />
 </Base>

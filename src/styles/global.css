@@ -1,3 +1,40 @@
+/* Golos Text (SIL OFL 1.1) — рубленый шрифт с кириллицей, лежит в public/fonts */
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-cyrillic-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F;
+}
+
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-cyrillic-wght-normal.woff2') format('woff2');
+  unicode-range: U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116;
+}
+
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 900;
+  src: url('/fonts/golos-text-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
 :root {
   --bg: #f4f1ea;
   --panel: #ffffff;
@@ -9,7 +46,7 @@
   --tag-authors: #2f5d50;
   --tag-internal: #3b4d8a;
   --tag-final: #7a3b6b;
-  --font: 'Georgia', 'Times New Roman', serif;
+  --font: 'Golos Text', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   --font-mono: 'Courier New', monospace;
 }
 
@@ -65,7 +102,6 @@ a { color: inherit; }
 .sidebar .tagline {
   font-size: 0.85rem;
   color: var(--muted);
-  font-style: italic;
   margin: 10px 0 0;
 }
 
@@ -231,10 +267,33 @@ nav.folders .dot[data-tag="poslednie-pravki"] { background: var(--tag-final); }
 .letter .meta span.label { color: var(--ink); display: inline-block; width: 52px; }
 
 .letter .body {
-  white-space: pre-wrap;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
+  line-height: 1.65;
   max-width: 68ch;
+  overflow-wrap: break-word;
 }
+
+.letter .body > :first-child { margin-top: 0; }
+.letter .body > :last-child { margin-bottom: 0; }
+
+.letter .body p { margin: 0 0 1em; }
+
+.letter .body ul,
+.letter .body ol {
+  margin: 0 0 1em;
+  padding-left: 1.5em;
+}
+
+.letter .body li {
+  margin: 0 0 0.8em;
+  padding-left: 0.25em;
+}
+
+.letter .body li:last-child { margin-bottom: 0; }
+.letter .body li::marker { color: var(--muted); }
+.letter .body li > p { margin: 0; }
+.letter .body li > ul,
+.letter .body li > ol { margin: 0.5em 0 0; }
 
 .back-link {
   display: inline-block;
@@ -740,7 +799,6 @@ nav.folders .dot[data-tag="poslednie-pravki"] { background: var(--tag-final); }
 }
 
 .voice-transcript {
-  font-style: italic;
   color: var(--muted);
   font-size: 0.85rem;
   margin: 4px 0 16px;
@@ -941,4 +999,172 @@ nav.folders .dot[data-tag="poslednie-pravki"] { background: var(--tag-final); }
   border-radius: 4px;
   padding: 2px 8px;
   margin-bottom: 12px;
+}
+
+/* --- Блок «О проекте» на главной --- */
+
+.about {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 24px 28px 18px;
+  margin-bottom: 20px;
+}
+
+.about h2 {
+  font-size: 1.3rem;
+  line-height: 1.25;
+  margin: 0 0 14px;
+}
+
+.about p {
+  margin: 0 0 0.9em;
+  max-width: 68ch;
+  line-height: 1.65;
+}
+
+.about-folders {
+  list-style: none;
+  margin: 0 0 1em;
+  padding: 0;
+  max-width: 68ch;
+}
+
+.about-folders li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 0.45em;
+  line-height: 1.55;
+}
+
+.about-folders .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 8px;
+  background: var(--muted);
+  position: relative;
+  top: -1px;
+}
+
+.about-folders .dot[data-tag="rassylka"] { background: var(--tag-newsletter); }
+.about-folders .dot[data-tag="avtory"] { background: var(--tag-authors); }
+.about-folders .dot[data-tag="perepiska"] { background: var(--tag-internal); }
+.about-folders .dot[data-tag="poslednie-pravki"] { background: var(--tag-final); }
+
+.about-folders a { font-weight: 600; text-decoration: none; }
+.about-folders a:hover { color: var(--accent); }
+
+.about .about-cta { margin: 0 0 1.2em; }
+
+.about .about-cta a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.about .about-cta a:hover { text-decoration: underline; }
+
+.faq { border-top: 1px solid var(--line); }
+
+.faq details { border-bottom: 1px solid var(--line); }
+.faq details:last-child { border-bottom: none; }
+
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 11px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.faq summary::-webkit-details-marker { display: none; }
+
+.faq summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 8px;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.faq details[open] > summary::before { transform: rotate(90deg); }
+
+.faq details p {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* --- Мобильная версия: отступы, абзацы, списки --- */
+
+@media (max-width: 780px) {
+  .shell {
+    padding: 20px 14px 48px;
+    gap: 20px;
+  }
+
+  .sidebar { gap: 18px; }
+  .sidebar .brand h1 { font-size: 1.3rem; }
+  nav.folders { padding-top: 12px; }
+
+  .push-subscribe,
+  .tg-subscribe {
+    margin-top: 0;
+    padding-top: 12px;
+  }
+
+  .side-footer { padding-top: 12px; }
+
+  .inbox-row { padding: 14px 16px; }
+
+  /* отправитель и дата в две строки: длинный e-mail не выталкивает дату за экран */
+  .inbox-row .row-top {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .inbox-row .row-top span { overflow-wrap: anywhere; }
+
+  .about { padding: 18px 16px 10px; }
+  .about h2 { font-size: 1.2rem; }
+
+  /* письмо: больше места под текст, меньше воздуха вокруг карточки */
+  .letter { padding: 20px 16px 24px; }
+  .letter .letter-subject { font-size: 1.3rem; line-height: 1.3; }
+  .letter .meta { overflow-wrap: anywhere; }
+
+  .letter .body {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .letter .body p { margin-bottom: 0.85em; }
+
+  .letter .body ul,
+  .letter .body ol { padding-left: 1.25em; }
+
+  .letter .body li { margin-bottom: 0.7em; }
+
+  .letter .body table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .mail-form .mf-row { flex-direction: column; }
+
+  .mail-form .mf-label {
+    flex: none;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* цепочки: сообщения внутри карточки не должны сжимать текст */
+  .message summary { padding: 10px 14px; }
+  .message .meta { padding: 10px 14px 0; }
+  .message .body { padding: 10px 14px 14px; }
+
+  .share-wrap { margin-top: 20px; }
 }
