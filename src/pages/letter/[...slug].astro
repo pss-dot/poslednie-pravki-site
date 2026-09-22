@@ -57,12 +57,20 @@ const SingleContent = items[0].Content;
 const displaySubject = 'Re: '.repeat(latest.data.replyDepth) + latest.data.subject;
 
 // Plain-text excerpt for <meta description> and the schema.org description —
-// strip markdown syntax and quoted reply lines, collapse whitespace.
+// strip quoted reply lines and markdown syntax. Decorative HTML blocks that
+// carry no sentence of their own (voice-note player, broken-attachment icon)
+// are dropped entirely rather than tag-stripped, so a voice message or a
+// failed-upload block never becomes the excerpt just because it happens to
+// sit first in the letter — any other HTML (chat screenshots, forwarded
+// quotes, etc.) has its tags stripped but its text kept.
 const excerpt = latest.body
   ? latest.body
       .split('\n')
       .filter((line) => !line.trim().startsWith('>'))
       .join(' ')
+      .replace(/<div class="voice-note">[\s\S]*?<\/div>/g, '')
+      .replace(/<div class="attachment-broken">[\s\S]*?<\/div>/g, '')
+      .replace(/<[^>]+>/g, ' ')
       .replace(/[#*_`>]/g, '')
       .replace(/\s+/g, ' ')
       .trim()
