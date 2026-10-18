@@ -1,0 +1,92 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { getSortedThreads } from '../lib/threads';
+import { TAG_LABELS } from '../lib/tags';
+import { SITE_URL, BLOG_REF, ORG_REF } from '../lib/about';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const threads = getSortedThreads(allPosts);
+
+const monthFmt = new Intl.DateTimeFormat('ru-RU', { month: 'long', year: 'numeric' });
+const dayFmt = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' });
+
+// Группируем по месяцам (новые сверху).
+const groups: { key: string; label: string; items: typeof threads }[] = [];
+for (const t of threads) {
+  const d = t.latest.data.date;
+  const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  let g = groups[groups.length - 1];
+  if (!g || g.key !== key) {
+    g = { key, label: monthFmt.format(d), items: [] };
+    groups.push(g);
+  }
+  g.items.push(t);
+}
+
+const subjectOf = (t: (typeof threads)[number]) => 'Re: '.repeat(t.latest.data.replyDepth) + t.latest.data.subject;
+const canonicalURL = `${SITE_URL}/arhiv/`;
+const description = `Все ${threads.length} писем вымышленной рабочей почты издательского агентства «Последние правки» одним списком, по месяцам: рассылки, письма авторов, переписка редакции.`;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${canonicalURL}#collection`,
+    name: 'Архив: все письма',
+    description,
+    url: canonicalURL,
+    inLanguage: 'ru-RU',
+    isPartOf: BLOG_REF,
+    publisher: ORG_REF,
+    breadcrumb: { '@id': `${canonicalURL}#breadcrumb` },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: threads.length,
+      itemListElement: threads.map((t, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${SITE_URL}/letter/${t.base}/`,
+        name: subjectOf(t),
+      })),
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': `${canonicalURL}#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Все письма', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Архив', item: canonicalURL },
+    ],
+  },
+];
+---
+<Base title="Архив: все письма" description={description} schema={schema}>
+  <section class="archive">
+    <h2 class="archive-title">Архив: все письма</h2>
+    <p class="archive-lead">
+      {threads.length} писем и цепочек, от новых к старым. Это тот же ящик, что на главной,
+      только без деления на страницы. Папки: {Object.entries(TAG_LABELS).map(([slug, label], i) => (
+        <>{i > 0 && ', '}<a href={`/tag/${slug}/`}>{label}</a></>
+      ))}.
+    </p>
+    {groups.map((g) => (
+      <section class="archive-month">
+        <h3 id={g.key}>{g.label}</h3>
+        <ul class="archive-list">
+          {g.items.map((t) => (
+            <li>
+              <a href={`/letter/${t.base}/`}>
+                <span class="archive-date">{dayFmt.format(t.latest.data.date)}</span>
+                <span class="archive-subject">{subjectOf(t)}</span>
+              </a>
+              <span class="tag-badge" data-tag={t.latest.data.tag}>{TAG_LABELS[t.latest.data.tag] ?? t.latest.data.tag}</span>
+              {t.count > 1 && <span class="thread-count-badge">{t.count} писем</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </section>
+</Base>
