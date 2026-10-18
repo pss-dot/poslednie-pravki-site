@@ -71,6 +71,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   <title>{pageTitle}</title>
   <meta name="description" content={pageDescription} />
   <link rel="canonical" href={canonicalURL} />
+  <link rel="alternate" type="application/rss+xml" title="Последние правки — новые письма" href="/rss.xml" />
 
   <link rel="preload" href="/fonts/golos-text-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/golos-text-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
@@ -145,6 +146,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
         <a href="/tag/poslednie-pravki/" class={isActive('/tag/poslednie-pravki/') ? 'active' : ''}>
           <span class="dot" data-tag="poslednie-pravki"></span>Последние правки
         </a>
+        <a href="/arhiv/" class={isActive('/arhiv/') ? 'active' : ''}>Архив: все письма</a>
       </nav>
       <div class="push-subscribe" id="push-subscribe" hidden>
         <button type="button" id="push-subscribe-btn" class="push-btn">🔔 Получать уведомления о новых письмах</button>
@@ -155,7 +157,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       <footer class="side-footer">
         «Последние правки» — издательское агентство.<br />Это блог от имени рабочего почтового ящика.
         <div class="year year-desktop">© {currentYear} · письма написаны с помощью ИИ</div>
-        <div class="footer-links"><a href="/cookies/">Политика cookies</a></div>
+        <div class="footer-links"><a href="/arhiv/">Архив</a> · <a href="/rss.xml">RSS</a> · <a href="/cookies/">Политика cookies</a></div>
       </footer>
     </aside>
     <div class="content-col">

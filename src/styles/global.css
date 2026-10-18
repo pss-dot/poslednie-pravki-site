@@ -1168,3 +1168,39 @@ nav.folders .dot[data-tag="poslednie-pravki"] { background: var(--tag-final); }
 
   .share-wrap { margin-top: 20px; }
 }
+
+/* ---- Архив, «Читайте также», ссылка на архив под пагинацией ---- */
+.pager-archive { margin: 10px 0 0; font-family: var(--font-mono); font-size: 0.82rem; text-align: center; }
+.pager-archive a { color: var(--accent); text-decoration: none; }
+.pager-archive a:hover { text-decoration: underline; }
+
+.archive-title { margin: 0 0 8px; }
+.archive-lead { color: var(--muted); margin: 0 0 24px; line-height: 1.55; }
+.archive-lead a { color: var(--accent); }
+.archive-month h3 {
+  margin: 28px 0 8px;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+.archive-list { list-style: none; margin: 0; padding: 0; }
+.archive-list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.archive-list li:last-child { border-bottom: none; }
+.archive-list a { color: inherit; text-decoration: none; display: inline-flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.archive-list a:hover .archive-subject { text-decoration: underline; }
+.archive-date { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); min-width: 6.5em; }
+
+.related-letters {
+  margin: 28px 0 0;
+  padding: 16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.related-letters h3 { margin: 0 0 8px; font-size: 0.9rem; font-family: var(--font-mono); font-weight: 600; color: var(--muted); }
+.related-letters ul { list-style: none; margin: 0; padding: 0; }
+.related-letters li { padding: 5px 0; }
+.related-letters a { color: var(--accent); text-decoration: none; }
+.related-letters a:hover { text-decoration: underline; }

@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import { groupThreads } from '../../lib/threads';
 import { TAG_LABELS } from '../../lib/tags';
 import { SITE_URL, ORG_REF, BLOG_REF, DISCLAIMER } from '../../lib/about';
+import relatedMap from '../../data/related.json';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -21,21 +22,42 @@ export async function getStaticPaths() {
   const subjectOf = (t: (typeof ordered)[number]) =>
     'Re: '.repeat(t.latest.data.replyDepth) + t.latest.data.subject;
 
+  const bySlug = new Map(ordered.map((t) => [t.base, t]));
+
   return ordered.map(({ base, members }, i) => {
     const prev = i > 0 ? ordered[i - 1] : null;
     const next = i < ordered.length - 1 ? ordered[i + 1] : null;
+
+    // «Читайте также»: сначала вручную подобранные связи (src/data/related.json),
+    // затем добираем до четырёх ближайшими по дате письмами из той же папки.
+    const picked: string[] = [];
+    for (const slug of ((relatedMap as Record<string, string[]>)[base] ?? [])) {
+      if (slug !== base && bySlug.has(slug) && !picked.includes(slug)) picked.push(slug);
+    }
+    const tag = members[0].data.tag;
+    const sameTag = ordered
+      .map((t, idx) => ({ t, dist: Math.abs(idx - i) }))
+      .filter(({ t }) => t.base !== base && t.members[0].data.tag === tag && !picked.includes(t.base))
+      .sort((a, b) => a.dist - b.dist);
+    for (const { t } of sameTag) {
+      if (picked.length >= 4) break;
+      picked.push(t.base);
+    }
+    const related = picked.slice(0, 4).map((slug) => ({ base: slug, subject: bySlug.get(slug)!.members[0].data.subject }));
+
     return {
       params: { slug: base },
       props: {
         members,
         prevLetter: prev ? { base: prev.base, subject: subjectOf(prev) } : null,
         nextLetter: next ? { base: next.base, subject: subjectOf(next) } : null,
+        related,
       },
     };
   });
 }
 
-const { members, prevLetter, nextLetter } = Astro.props;
+const { members, prevLetter, nextLetter, related } = Astro.props;
 const latest = members[members.length - 1];
 const isThread = members.length > 1;
 
@@ -74,8 +96,15 @@ const excerpt = latest.body
       .replace(/[#*_`>]/g, '')
       .replace(/\s+/g, ' ')
       .trim()
-      .slice(0, 155)
   : '';
+// Описание для <meta> и schema.org: до ~155 символов, обрезаем по границе слова.
+const excerptShort = (() => {
+  if (excerpt.length <= 155) return excerpt;
+  const cut = excerpt.slice(0, 155);
+  const lastSpace = cut.lastIndexOf(' ');
+  const base = (lastSpace > 100 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:—–-]+$/, '');
+  return base.replace(/[.!?…]+$/, '') + '…';
+})();
 
 const authorName = latest.data.from.replace(/<.*?>/, '').trim();
 const canonicalURL = new URL(`/letter/${members[0].id}/`, Astro.site).toString();
@@ -109,7 +138,7 @@ const schema = [
     '@type': 'BlogPosting',
     '@id': `${canonicalURL}#article`,
     headline: displaySubject,
-    description: excerpt,
+    description: excerptShort,
     disambiguatingDescription: DISCLAIMER,
     image: { '@type': 'ImageObject', url: ogImageURL, width: 1200, height: 630 },
     datePublished: publishedTime,
@@ -144,7 +173,7 @@ const schema = [
 ---
 <Base
   title={displaySubject}
-  description={excerpt}
+  description={excerptShort}
   schema={schema}
   letterBase={members[0].id}
   ogType="article"
@@ -204,6 +233,17 @@ const schema = [
       </button>
     </div>
   </article>
+
+  {related.length > 0 && (
+    <aside class="related-letters" aria-labelledby="related-title">
+      <h3 id="related-title">Читайте также</h3>
+      <ul>
+        {related.map((r) => (
+          <li><a href={`/letter/${r.base}/`}>{r.subject}</a></li>
+        ))}
+      </ul>
+    </aside>
+  )}
 
   {(prevLetter || nextLetter) && (
     <nav class="letter-nav">

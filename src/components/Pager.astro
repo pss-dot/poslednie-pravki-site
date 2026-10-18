@@ -18,3 +18,6 @@ const nextUrl = currentPage < totalPages ? pageUrl(currentPage + 1) : null;
     {nextUrl ? <a href={nextUrl} class="pager-link pager-next">Старее →</a> : <span class="pager-link pager-disabled">Старее →</span>}
   </nav>
 )}
+{totalPages > 1 && (
+  <p class="pager-archive"><a href="/arhiv/">Все письма одним списком →</a></p>
+)}

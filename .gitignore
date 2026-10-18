@@ -3,3 +3,6 @@ dist/
 .astro/
 dist-deploy.zip
 _deploy/
+
+.work/
+__pycache__/
