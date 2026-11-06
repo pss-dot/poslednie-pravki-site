@@ -6,6 +6,7 @@ date: 2026-11-06
 tag: "avtory"
 replyDepth: 0
 draft: false
+image: "/og/ne-posylay-eto-v-chetverg.png"
 ---
 Мия, добрый день.
 

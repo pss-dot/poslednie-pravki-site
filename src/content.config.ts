@@ -13,6 +13,9 @@ const posts = defineCollection({
     // letter, 1+ for a reply in a thread (2 = "Re: Re: тема", etc).
     replyDepth: z.number().int().min(0).default(0),
     draft: z.boolean().default(false),
+    // Optional per-letter og:image (path under /public, e.g. "/og/<slug>.png").
+    // Falls back to the site-wide /og-image.png when absent.
+    image: z.string().optional(),
   }),
 });
 

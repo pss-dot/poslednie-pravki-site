@@ -108,7 +108,7 @@ const excerptShort = (() => {
 
 const authorName = latest.data.from.replace(/<.*?>/, '').trim();
 const canonicalURL = new URL(`/letter/${members[0].id}/`, Astro.site).toString();
-const ogImageURL = new URL('/og-image.png', Astro.site).toString();
+const ogImageURL = new URL(latest.data.image ?? '/og-image.png', Astro.site).toString();
 const tagLabel = TAG_LABELS[latest.data.tag] ?? latest.data.tag;
 const publishedTime = members[0].data.date.toISOString();
 const modifiedTime = latest.data.date.toISOString();
@@ -181,6 +181,7 @@ const schema = [
   modifiedTime={modifiedTime}
   articleAuthor={authorName}
   articleSection={tagLabel}
+  ogImage={latest.data.image}
 >
   <a class="back-link" href="/">&larr; Ко всем письмам</a>
   <article class="letter">
